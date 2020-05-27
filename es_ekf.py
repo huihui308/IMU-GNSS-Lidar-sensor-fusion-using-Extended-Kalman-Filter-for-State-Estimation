@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
 # Starter code for the Coursera SDC Course 2 final project.
 #
 # Author: Trevor Ablett and Jonathan Kelly
 # University of Toronto Institute for Aerospace Studies
+import matplotlib
+matplotlib.use("Pdf")
 import pickle
 import numpy as np
 from numpy import matmul
@@ -9,13 +12,14 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from rotations import angle_normalize, rpy_jacobian_axis_angle, skew_symmetric, Quaternion
 
+
 #### 1. Data ###################################################################################
 
 ################################################################################################
 # This is where you will load the data from the pickle files. For parts 1 and 2, you will use
-# p1_data.pkl. For Part 3, you will use pt3_data.pkl.
+# pt1_data.pkl. For Part 3, you will use pt3_data.pkl.
 ################################################################################################
-with open('data/pt1_data.pkl', 'rb') as file:
+with open('data/pt3_data.pkl', 'rb') as file:
     print("Using the following raw data: ", file.name)
     data = pickle.load(file)
 
@@ -44,10 +48,13 @@ with open('data/pt1_data.pkl', 'rb') as file:
 #     t: Timestamps in ms.
 ################################################################################################
 gt = data['gt']
+#print(gt.p)
 imu_f = data['imu_f']
 imu_w = data['imu_w']
 gnss = data['gnss']
+#print(gnss.data)
 lidar = data['lidar']
+print(lidar.data)
 
 ################################################################################################
 # Let's plot the ground truth trajectory to see what it looks like. When you're testing your
@@ -61,7 +68,10 @@ ax.set_ylabel('y [m]')
 ax.set_zlabel('z [m]')
 ax.set_title('Ground Truth trajectory')
 ax.set_zlim(-1, 5)
-plt.show()
+#plt.show()
+giPictPth0 = "/mnt/hwww/study/ekf0.jpg"
+plt.savefig(giPictPth0, dpi = 400)
+print("Generate %s success" %(giPictPth0))
 
 ################################################################################################
 # Remember that our LIDAR data is actually just a set of positions estimated from a separate
@@ -89,6 +99,7 @@ C_li = np.array([
 t_i_li = np.array([0.5, 0.1, 0.5])
 
 # Transform from the LIDAR frame to the vehicle (IMU) frame.
+#print(lidar.data)
 lidar.data = (C_li @ lidar.data.T).T + t_i_li
 
 #### 2. Constants ##############################################################################
@@ -144,7 +155,7 @@ def measurement_update(sensor_var, p_cov_check, y_k, p_check, v_check, q_check):
         inv = np.linalg.inv(temp)
         #print("temp: ", temp.shape, "sensor_var: ", sensor_var)
         K = matmul(p_cov_check, matmul(h_jac.T, inv)) #np.linalg.inv(matmul(h_jac, matmul(p_cov_check, h_jac.T)) + sensor_var )))
-        
+
     except np.linalg.LinAlgError as err:
         if 'Singular matrix' in str(err):
             raise "A singular matrix "
@@ -200,14 +211,14 @@ for k in range(1, imu_f.data.shape[0]):  # start at 1 b/c we have initial predic
         if abs(gnss.t[i] - imu_f.t[k]) < 0.01:
             #print("hey, a new gnss measurement")
             p_est[k], v_est[k], q_est[k], p_cov[k] = measurement_update(var_gnss, p_cov[k], gnss.data[i],
-                                                                p_est[k], v_est[k], q_est[k]) 
+                                                                p_est[k], v_est[k], q_est[k])
 
     for i in range(len(lidar.t)):
         if abs(lidar.t[i] - imu_f.t[k]) < 0.01:
             #print("hey, a new lidar measurement")
             p_est[k], v_est[k], q_est[k], p_cov[k] = measurement_update(var_lidar, p_cov[k], lidar.data[i],
                                                                 p_est[k], v_est[k], q_est[k])
-            
+
 
 #### 6. Results and Analysis ###################################################################
 
@@ -233,7 +244,10 @@ ax.set_yticks([0, 50, 100, 150, 200])
 ax.set_zticks([-2, -1, 0, 1, 2])
 ax.legend(loc=(0.62,0.77))
 ax.view_init(elev=45, azim=-50)
-plt.show()
+#plt.show()
+giPictPth1 = "/mnt/hwww/study/ekf1.jpg"
+plt.savefig(giPictPth1, dpi = 400)
+print("Generate %s success" %(giPictPth1))
 
 ################################################################################################
 # We can also plot the error for each of the 6 DOF, with estimates for our uncertainty
@@ -276,7 +290,10 @@ for i in range(3):
     ax[1, i].plot(range(num_gt), -3 * p_cov_euler_std[:num_gt, i], 'r--')
     ax[1, i].set_title(titles[i+3])
 ax[1,0].set_ylabel('Radians')
-plt.show()
+#plt.show()
+giPictPth2 = "/mnt/hwww/study/ekf2.jpg"
+plt.savefig(giPictPth2, dpi = 400)
+print("Generate %s success" %(giPictPth2))
 
 #### 7. Submission #############################################################################
 

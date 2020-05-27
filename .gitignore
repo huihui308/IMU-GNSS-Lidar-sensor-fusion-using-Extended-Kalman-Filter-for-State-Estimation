@@ -1,0 +1,9 @@
+/cmake-build-debug
+/.idea
+build
+*.sh
+cscope.*
+tags
+*.so
+__pycache__
+pt1_submission.txt

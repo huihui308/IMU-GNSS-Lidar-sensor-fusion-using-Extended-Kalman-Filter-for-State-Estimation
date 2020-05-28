@@ -309,7 +309,7 @@ p1_str = ''
 for val in p1_indices:
     for i in range(3):
         p1_str += '%.3f ' % (p_est[val, i])
-with open('pt1_submission.txt', 'w') as file:
+with open('./submission/pt1_submission.txt', 'w') as file:
     file.write(p1_str)
 
 # Pt. 2 submission

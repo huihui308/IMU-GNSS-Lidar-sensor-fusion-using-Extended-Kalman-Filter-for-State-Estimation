@@ -48,13 +48,13 @@ with open('data/pt3_data.pkl', 'rb') as file:
 #     t: Timestamps in ms.
 ################################################################################################
 gt = data['gt']
-#print(gt.p)
+#print(gt._t)
 imu_f = data['imu_f']
 imu_w = data['imu_w']
 gnss = data['gnss']
 #print(gnss.data)
 lidar = data['lidar']
-print(lidar.data)
+#print(lidar.data)
 
 ################################################################################################
 # Let's plot the ground truth trajectory to see what it looks like. When you're testing your
@@ -101,6 +101,7 @@ t_i_li = np.array([0.5, 0.1, 0.5])
 # Transform from the LIDAR frame to the vehicle (IMU) frame.
 #print(lidar.data)
 lidar.data = (C_li @ lidar.data.T).T + t_i_li
+#print(lidar.data)
 
 #### 2. Constants ##############################################################################
 
